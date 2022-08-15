@@ -6,25 +6,43 @@
 npm i -S validate-permission
 ```
 
-## 导出结构
+## 方法
 
+导出结构如下
 ``` javascript
 export default {
-    // 设置用户权限集：所有检测方法的前置操作
     setPermissions,
-    // 获取用户权限集：自定义校验权限时，可以通过该方法获取用户的所有权限
     getPermissions,
-    // 暴露install方法，以便能够在vue中直接调用use方法
     install,
-    // 提供指令，方便用户自定义注册指令
     directive,
-    // 函数式调用：在react或者其他函数式框架中使用
-    validate,
-        // validate.is({ value: 'USER.PAGE' })检测是存在某个权限
-        // validate.all({ value: ['USER.ADD', 'USER.EDIT'] })检测是否存在某一组权限，需要全部匹配
-        // validate.atLeast({ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 })检测是否存在某组权限中的几个，匹配个数等于参数`n`
+    validate
 };
 ```
+
+### setPermissions
+
+设置用户权限集：所有检测方法的前置操作
+
+### getPermissions
+
+获取用户权限集：自定义校验权限时，可以通过该方法获取用户的所有权限
+
+### install
+
+暴露install方法，以便能够在vue中直接调用use方法
+
+### directive
+
+提供指令，可以在vue中自定义注册指令
+
+### validate
+
+函数式调用：在react或者其他函数式框架中使用
+
+- validate.is({ value: 'USER.PAGE' })检测是存在某个权限
+- validate.all({ value: ['USER.ADD', 'USER.EDIT'] })检测是否存在某一组权限，需要全部匹配
+- validate.atLeast({ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 })检测是否存在某组权限中的几个，匹配个数等于参数`n`
+
 
 ## 使用
 
