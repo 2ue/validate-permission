@@ -55,11 +55,14 @@ jobs:
         run: |
           # 更新版本号并获取新版本号
           VERSION=$(npm version patch --no-git-tag-version --silent)
-          SHORT_GITHUB_SHA_SHA=$(echo ${GITHUB_SHA:0:8})
-          TAG_NAME="${VERSION}-${SHORT_SHA}"
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "VERSION=$VERSION"
           # 将新版本号输出到环境变量
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+          SHORT_GITHUB_SHA=$(echo ${GITHUB_SHA:0:8})
+          echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA"
+          echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA" >> $GITHUB_ENV
+          TAG_NAME="${VERSION}-${SHORT_GITHUB_SHA}"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Commit and push version bump
         run: |
