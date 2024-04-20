@@ -45,3 +45,34 @@ jobs:
         run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
+
+
+      - name: Set Git user and email
+        run: |
+          git config --local user.name ${{vars.NAME}}
+          git config --local user.email ${{vars.EMAIL}}
+
+      - name: Bump version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          NEW_VERSION="${VERSION%.*}.1"
+          jq --arg version "$NEW_VERSION" '.version = $version' package.json > package.json.new && mv package.json.new package.json
+          echo "New version set to $NEW_VERSION"
+
+      - name: Commit and push version bump
+        run: |
+          git add package.json
+          git commit -m "Bump version to $NEW_VERSION"
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          git push origin main --tags
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: "v${{ env.NEW_VERSION }}"
+          release_name: "Release v${{ env.NEW_VERSION }}"
+          body: "Check the changelog for details."
+          draft: false
+          prerelease: false
