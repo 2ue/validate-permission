@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ScriptHost"],
+    "declaration": true,
+    "outDir": "./dist", // 指定 JavaScript 文件输出目录
+    "declarationDir": "./dist", // 指定 .d.ts 文件输出目录
+    "downlevelIteration": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules", "dist"]
+}

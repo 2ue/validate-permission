@@ -11,9 +11,10 @@
  * 4.自定义校验
  */
 
-import { isNull } from '../utils';
+import { isBlankValue, isType } from '../utils';
+import { Permissions, AtLeastFunc, IsFunc, AllFunc } from '../types';
 
-let permissionList = [];
+let permissionList: Permissions = [];
 // 要来标记是否已经调用setPermissions方法设置权限合集，permissionList不能作为判断标准，因为permissionList可能为空（用户无任何权限）
 let hasSeted = false;
 
@@ -23,7 +24,7 @@ let hasSeted = false;
  * @param list<Array>: 要校验的权限合集，如果没有任何权限支持传入空数组或者null
  * 
  * */
-export function setPermissions (list) {
+export function setPermissions (list: Permissions) {
   permissionList = [...(list || [])];
   hasSeted = true;
 }
@@ -39,9 +40,9 @@ function validatePermissionList() {
   return true;
 }
 
-function validateParam(value) {
-  if (!validatePermissionList()) return;
-  if (isNull(value)) {
+function validateParam(value: any, permissions: Permissions) {
+  if (isBlankValue(permissions) || !validatePermissionList()) return;
+  if (isBlankValue(value)) {
     console.warn('传入的权限参数不能为空');
     return false;
   }
@@ -56,7 +57,9 @@ function validateParam(value) {
  * 单个权限校验
  * is('USER') => permissionList.includes('USER')
  */
-function is({ value }, userPermissions = permissionList) {
+const is: IsFunc = (value: string, userPermissions = permissionList): boolean => {
+  const valid = validateParam(validate, userPermissions);
+  if (!valid) return false;
   return userPermissions.includes(value);
 }
 
@@ -64,10 +67,10 @@ function is({ value }, userPermissions = permissionList) {
  * 至少满足多少个权限
  * atLeast(['USER', 'ADMIN', 'SETTING'], 2)
  */
-function atLeast({ value, n }, userPermissions = permissionList) {
-  let checkNum = num;
+const atLeast: AtLeastFunc = ({ value, n }, userPermissions = permissionList) => {
+  let checkNum = n;
   for (let i = 0; i <= value.length; i++) {
-    if (is({ value: value[i] }, userPermissions)) {
+    if (is(value[i], userPermissions)) {
       checkNum -= 1;
     }
     if (checkNum === 0) break; 
@@ -76,10 +79,23 @@ function atLeast({ value, n }, userPermissions = permissionList) {
 }
 
 /**
+ * 满足其中一个
+ * is('USER') => permissionList.includes('USER')
+ */
+const oneOf: AllFunc = (values, userPermissions = permissionList): boolean => {
+  const valid = validateParam(validate, userPermissions);
+  if (!valid) return false;
+  return atLeast({
+    value: values,
+    n: 1,
+  }, permissionList);
+}
+
+/**
  * 满足所有权限
  * all(['USER', 'ADMIN', 'SETTING']) permissionList.includes('USER')
  */
-function all(value, userPermissions = permissionList) {
+const all: AllFunc = (value, userPermissions = permissionList) =>  {
   return atLeast({ value, n: value.length }, userPermissions)
 }
 
@@ -87,16 +103,19 @@ function all(value, userPermissions = permissionList) {
 const validate = {
   is,
   atLeast,
+  oneOf,
   all,
 }
 
 const directive = {
-  inserted(el, binding) {
+  inserted(el: any, binding: any) {
     const { arg = 'is', value } = binding;
-    if (validate[arg]) {
+    // @ts-ignore
+    const validateFunc = validate?.[arg] as Function;
+    if (!isType(validateFunc, 'Function')) {
       return;
     }
-    const hasPermission = validate[arg](value);
+    const hasPermission =validateFunc(value);
     // 主要考虑到数据变化后，页面未刷新能实时响应
     if (!hasPermission) {
       if (el.parentNode && el.parentNode.removeChild(el)) return;
@@ -106,7 +125,7 @@ const directive = {
   },
 };
 
-function install(Vue) {
+function install(Vue: any) {
   Vue.directive('permission', directive);
   if (Vue.prototype.$permission) {
     console.warn('权限指令注册失败：已存在$permission');
