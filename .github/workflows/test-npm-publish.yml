@@ -63,7 +63,7 @@ jobs:
         run: |
           git add package.json
           git commit -m "Bump version to ${{ env.NEW_VERSION }}"
-          git tag -a "v${{ env.NEW_VERSION }}" -m "Release v${{ env.NEW_VERSION }}"
+          git tag -a "${{ env.NEW_VERSION }}" -m "Release ${{ env.NEW_VERSION }}"
           git push origin main --tags
 
       - name: Create GitHub Release
@@ -71,8 +71,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: "v${{ env.NEW_VERSION }}"
-          release_name: "Release v-${{ env.NEW_VERSION }}"
+          tag_name: "${{ env.NEW_VERSION }}"
+          release_name: "Release ${{ env.NEW_VERSION }}"
           body: "Check the changelog for details."
           draft: false
           prerelease: false
