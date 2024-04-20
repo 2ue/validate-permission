@@ -72,7 +72,8 @@ jobs:
           git add package.json
           git commit -m "Bump version to ${{ env.TAG_NAME }}"
           git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
-          git push origin main --tags
+          git push origin main
+          git push origin ${{ env.TAG_NAME }}
 
       - name: Create GitHub Release
         uses: actions/create-release@v1.1.4
