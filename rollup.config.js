@@ -18,7 +18,7 @@ const banner = `/*!
  * ${pkg.description}
  * Author: ${pkg.author.name}
  * Email: ${pkg.author.email}
- * Repository: ${pkg.repository.homepage}
+ * Repository: ${pkg.homepage}
  * Version: ${pkg.version}
  * License: ${pkg.license}
  */`;
@@ -30,11 +30,13 @@ module.exports = defineConfig({
             file: `dist/cjs/${libName}.cjs.js`,
             format: 'cjs',
             banner,
+            sourcemap: true,
         },
         {
             file: `dist/es/${libName}.es.js`,
             format: 'es',
             banner,
+            sourcemap: true,
         },
         {
             file: `dist/umd/${libName}.umd.js`,
@@ -43,6 +45,7 @@ module.exports = defineConfig({
             name: libName,
             exports: 'named',
             banner,
+            sourcemap: true,
         },
     ],
     plugins: [
