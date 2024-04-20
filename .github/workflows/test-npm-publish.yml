@@ -55,14 +55,17 @@ jobs:
         run: |
           # 更新版本号并获取新版本号
           VERSION=$(npm version patch --no-git-tag-version --silent)
+          SHORT_GITHUB_SHA_SHA=$(echo ${GITHUB_SHA:0:8})
+          TAG_NAME="${VERSION}-${SHORT_SHA}"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           # 将新版本号输出到环境变量
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Commit and push version bump
         run: |
           git add package.json
-          git commit -m "Bump version to ${{ env.NEW_VERSION }}"
-          git tag -a "${{ env.NEW_VERSION }}" -m "Release ${{ env.NEW_VERSION }}"
+          git commit -m "Bump version to ${{ env.TAG_NAME }}"
+          git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
           git push origin main --tags
 
       - name: Create GitHub Release
@@ -70,7 +73,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: "${{ env.NEW_VERSION }}"
+          tag_name: "${{ env.TAG_NAME }}"
           release_name: "Release ${{ env.NEW_VERSION }}"
           body: "Check the changelog for details."
           draft: false
