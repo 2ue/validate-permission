@@ -86,11 +86,11 @@ jobs:
           draft: false
           prerelease: false
       # Triggering Workflow 2
-      - name: Trigger Publish to npm
-        uses: benc-uk/workflow-dispatch@v1.2.3
-        with:
-          workflow: Npm publish
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Trigger Publish to npm
+      #   uses: benc-uk/workflow-dispatch@v1.2.3
+      #   with:
+      #     workflow: Npm publish
+      #     token: ${{ secrets.GITHUB_TOKEN }}
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
