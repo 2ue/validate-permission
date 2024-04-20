@@ -39,9 +39,10 @@ export default {
 
 函数式调用：在react或者其他函数式框架中使用
 
-- validate.is({ value: 'USER.PAGE' })检测是存在某个权限
-- validate.all({ value: ['USER.ADD', 'USER.EDIT'] })检测是否存在某一组权限，需要全部匹配
+- validate.is('USER.PAGE')检测是存在某个权限
+- validate.all(['USER.ADD', 'USER.EDIT'])检测是否存在某一组权限，需要全部匹配
 - validate.atLeast({ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 })检测是否存在某组权限中的几个，匹配个数等于参数`n`
+- validate.oneOf(['USER.ADD', 'USER.EDIT', 'USER.DELETE'])检测是否存在某组权限中匹配一个
 
 
 ## 使用
@@ -88,9 +89,9 @@ Vue.directive('permission', directive);
 
 ``` vue
 <template>
-    <button v-permission:is="{ value: 'USER.PAGE' }">用户列表权限</button>
-    <button v-permission:all="{ value: ['USER.ADD', 'USER.EDIT'] }">同时拥有用户新增和编辑权限</button>
-    <button v-permission:atLeast="{ value: ['USER.ADD', 'USER.EDIT'], n: 1 }">拥有用户新增或编辑权限</button>
+    <button v-permission:is="'USER.PAGE'">用户列表权限</button>
+    <button v-permission:all="['USER.ADD', 'USER.EDIT']">同时拥有用户新增和编辑权限</button>
+    <button v-permission:oneOf="['USER.ADD', 'USER.EDIT']">拥有用户新增或编辑权限</button>
     <button v-permission:atLeast="{ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 }">拥有用户新增、编辑、删除权限其中2个</button>
 </template>
 ```
@@ -110,8 +111,8 @@ Vue.use(validatePermission)
 ``` vue
 <template>
     <button v-permission:is="{ value: 'USER.PAGE' }">用户列表权限</button>
-    <button v-permission:all="{ value: ['USER.ADD', 'USER.EDIT'] }">同时拥有用户新增和编辑权限</button>
-    <button v-permission:atLeast="{ value: ['USER.ADD', 'USER.EDIT'], n: 1 }">拥有用户新增或编辑权限</button>
+    <button v-permission:all="['USER.ADD', 'USER.EDIT']">同时拥有用户新增和编辑权限</button>
+    <button v-permission:oneOf="['USER.ADD', 'USER.EDIT']">拥有用户新增或编辑权限</button>
     <button v-permission:atLeast="{ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 }">拥有用户新增、编辑、删除权限其中2个</button>
     <button @click="checkPermission">检查是否有用户列表权限</button>
 </template>
@@ -119,7 +120,7 @@ Vue.use(validatePermission)
     export default {
         methods: {
             checkPermission() {
-                console.log('是否拥有用户列表权限：', this.$permission.is({ value: 'USER.PAGE' }));
+                console.log('是否拥有用户列表权限：', this.$permission.is('USER.PAGE'));
             }
         }
     }
@@ -131,7 +132,8 @@ Vue.use(validatePermission)
 ``` javascript
 import { validate } from 'validate-permission';
 
-console.log('是否拥有用户列表权限：', validate.is({ value: 'USER.PAGE' }));
-console.log('是否拥有用户新增和编辑权限：', validate.all({ value: ['USER.ADD', 'USER.EDIT'] }));
+console.log('是否拥有用户列表权限：', validate.is('USER.PAGE'));
+console.log('是否拥有用户新增和编辑权限：', validate.all(['USER.ADD', 'USER.EDIT']));
+console.log('是否拥有用户新增或编辑权限：', validate.onfOf(['USER.ADD', 'USER.EDIT']));
 console.log('拥有用户新增、编辑、删除权限其中2个：', validate.atLeast({ value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'], n: 2 }));
 ```
