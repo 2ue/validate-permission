@@ -95,5 +95,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # 也可以直接写成R： GITHUB_REPOSITORY
+          # https://docs.github.com/zh/actions/learn-github-actions/variables
           repository: ${{ github.repository }}
           event-type: to-publish-npm
