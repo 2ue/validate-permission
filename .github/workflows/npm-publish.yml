@@ -1,4 +1,4 @@
-name: Npm publish and change log
+name: Npm publish
 on:
   push:
     tags:

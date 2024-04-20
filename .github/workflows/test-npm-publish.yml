@@ -1,4 +1,4 @@
-name: Test Npm publish and change log
+name: Test Npm publish
 on:
   push:
     branches:
@@ -85,3 +85,9 @@ jobs:
           body: "Check the changelog for details."
           draft: false
           prerelease: false
+      # Triggering Workflow 2
+      - name: Trigger Publish to npm
+        uses: peter-evans/workflow-dispatch@v3
+        with:
+          workflow: Npm publish
+          token: ${{ secrets.GITHUB_TOKEN }}
