@@ -95,5 +95,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: 2ue/validate-permission
+          repository: ${{ env.GITHUB_REPOSITORY }}
           event-type: to-publish-npm
