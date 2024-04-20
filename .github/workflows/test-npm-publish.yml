@@ -55,7 +55,7 @@ jobs:
         run: |
           pnpm run update-version
           # 更新版本号并获取新版本号
-          VERSION=$(pnpm run update-version --silent)
+          VERSION=$(npm version patch --no-git-tag-version --silent)
           # 将新版本号输出到环境变量
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
