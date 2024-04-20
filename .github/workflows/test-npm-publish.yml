@@ -52,13 +52,18 @@ jobs:
           git config --local user.email ${{vars.EMAIL}}
 
       - name: Update Version
-        run: pnpm run update-version
+        run: |
+          pnpm run update-version
+          # 更新版本号并获取新版本号
+          VERSION=$(pnpm run update-version --silent)
+          # 将新版本号输出到环境变量
+          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Commit and push version bump
         run: |
           git add package.json
-          git commit -m "Bump version to $NEW_VERSION"
-          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          git commit -m "Bump version to ${{ env.NEW_VERSION }}"
+          git tag -a "v${{ env.NEW_VERSION }}" -m "Release v${{ env.NEW_VERSION }}"
           git push origin main --tags
 
       - name: Create GitHub Release
@@ -67,7 +72,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           tag_name: "v${{ env.NEW_VERSION }}"
-          release_name: "Release v${{ env.NEW_VERSION }}"
+          release_name: "Release v-${{ env.NEW_VERSION }}"
           body: "Check the changelog for details."
           draft: false
           prerelease: false
