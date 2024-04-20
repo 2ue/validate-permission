@@ -53,7 +53,6 @@ jobs:
 
       - name: Update Version
         run: |
-          pnpm run update-version
           # 更新版本号并获取新版本号
           VERSION=$(npm version patch --no-git-tag-version --silent)
           # 将新版本号输出到环境变量

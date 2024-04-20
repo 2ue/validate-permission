@@ -1,14 +1,13 @@
 {
   "name": "validate-permission",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "用户权限校验，支持react（函数式）调用，vue组件，vue指令等方式调用",
   "main": "dist/validate-permission.cjs.js",
   "module": "dist/validate-permission.esm.js",
   "amdName": "validatePermission",
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rimraf -rf ./dist && rollup --config",
-    "update-version": "node version.js"
+    "build": "rimraf -rf ./dist && rollup --config"
   },
   "repository": {
     "type": "git",
@@ -47,7 +46,6 @@
     "rollup": "^4.14.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-terser": "^7.0.2",
-    "semver": "^7.6.0",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   }
