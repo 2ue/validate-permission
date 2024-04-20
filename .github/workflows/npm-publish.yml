@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
       - name: Set timezone to Asia/Shanghai
-        uses: szenius/set-timezone@v1.0
+        uses: szenius/set-timezone@v2.0
         with:
           # 设置执行环境的时区为 Linux 上海时区
           timezoneLinux: "Asia/Shanghai"
@@ -24,7 +24,7 @@ jobs:
         run: timedatectl
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.11.1
 
