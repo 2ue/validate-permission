@@ -1,8 +1,8 @@
-name: Npm publish and change log
+name: Test Npm publish and change log
 on:
   push:
-    tags:
-      - "v-*" # 这段的意思是仅在出现名为 v 字符开头的tag时，触发此任务，如v1.2.1
+    branches:
+      - main # master 分支有 push 行为时就触发这个 action
 
 jobs:
   publish:
@@ -42,6 +42,6 @@ jobs:
         run: pnpm run build
 
       - name: Start publish
-        run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
+        run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
