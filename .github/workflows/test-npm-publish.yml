@@ -46,25 +46,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
 
-
       - name: Set Git user and email
         run: |
           git config --local user.name ${{vars.NAME}}
           git config --local user.email ${{vars.EMAIL}}
 
-      - name: Bump version
-        run: |
-          # 使用 jq 解析 package.json 来获取当前版本
-          VERSION=$(jq -r '.version' package.json)
-          # 递增版本号的末尾数字
-          IFS='.' read -ra VERSION_PARTS <<< "$VERSION" # 使用 IFS来分割版本号的各个部分
-          ((VERSION_PARTS[-1]++)) # 递增最后一个元素
-          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2]}" # 重新组合版本号
-          # 更新 package.json 中的版本号
-          jq --argjson version "${NEW_VERSION}" '.version = $version' package.json > package.json.new && mv package.json.new package.json
-          echo "New version set to $NEW_VERSION"
-          # 设置输出变量，以便后续步骤使用
-          echo ::set-output name=NEW_VERSION::$NEW_VERSION
+      - name: Update Version
+        run: pnpm run update-version
 
       - name: Commit and push version bump
         run: |

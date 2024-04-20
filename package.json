@@ -7,7 +7,8 @@
   "amdName": "validatePermission",
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rimraf -rf ./dist && rollup --config"
+    "build": "rimraf -rf ./dist && rollup --config",
+    "update-version": "node version.js"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
     "rollup": "^4.14.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-terser": "^7.0.2",
+    "semver": "^7.6.0",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   }
