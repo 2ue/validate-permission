@@ -42,8 +42,10 @@ jobs:
       - name: Build dist
         run: |
           pnpm run build
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "//registry.npmjs.org/:always-auth=true" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
+          echo "//registry.npmjs.org/:always-auth=true" >> ./.npmrc
+          ls -al
+          cat ./.npmrc
 
       - name: Start publish
         run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
