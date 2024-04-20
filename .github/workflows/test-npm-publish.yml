@@ -91,3 +91,9 @@ jobs:
         with:
           workflow: Npm publish
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: 2ue/validate-permission
+          event-type: to-publish-npm
