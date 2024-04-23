@@ -1,4 +1,4 @@
-# 用户权限校验工具：validate-permission
+# 权限校验工具：validate-permission
 
 > `validate-permission`是一个多功能的权限校验库，它为开发者提供了一种灵活且高效的方式来校验用户权限。这个工具不仅支持React的函数式调用，还兼容Vue的原型链调用和自定义指令，使其能够适应不同的开发场景和需求。
 
