@@ -1,11 +1,11 @@
-name: Pre Deploy
+name: Pre Publish
 on:
   push:
     branches:
       - main # master 分支有 push 行为时就触发这个 action
 
 jobs:
-  publish:
+  pre-publish:
     # needs: test
     runs-on: ubuntu-latest
     steps:
@@ -29,23 +29,6 @@ jobs:
         with:
           node-version: 20.11.1
 
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm
-          # pnpm config set store-dir $(pwd)/.pnpm-store
-          # pnpm config set recursive-optional true
-
-      - name: Install Dependence
-        run: pnpm i
-
-      - name: Build dist
-        run: pnpm run build
-
-      - name: Pre publish
-        run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
-
       - name: Set Git user and email
         run: |
           git config --local user.name ${{vars.NAME}}
@@ -66,6 +49,23 @@ jobs:
           echo "TAG_NAME=$TAG_NAME"
           # 将组合的TAG_NAME输出到环境变量
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+      
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+          # pnpm config set store-dir $(pwd)/.pnpm-store
+          # pnpm config set recursive-optional true
+
+      - name: Install Dependence
+        run: pnpm i
+
+      - name: Build dist
+        run: pnpm run build
+
+      - name: Pre publish
+        run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -90,12 +90,32 @@ jobs:
           git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
           git push origin main
           git push origin ${{ env.TAG_NAME }}
-
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
+      
+      - uses: dorny/paths-filter@v3
+        id: changes
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # 也可以直接写成R： GITHUB_REPOSITORY
-          # https://docs.github.com/zh/actions/learn-github-actions/variables
-          repository: ${{ github.repository }}
-          event-type: to-publish-npm
+          filters: |
+            update:
+              - 'main/**'
+              - 'types/**'
+              - 'utils/**'
+              - package.json
+              - README.md
+              - rollup.config.js
+              - tsconfig.json
+              - .babelrc
+      
+      - name: Publish
+        if: steps.changes.outputs.update == 'true'
+        run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
+        
+      # - name: Repository Dispatch
+      #   uses: peter-evans/repository-dispatch@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     # 也可以直接写成R： GITHUB_REPOSITORY
+      #     # https://docs.github.com/zh/actions/learn-github-actions/variables
+      #     repository: ${{ github.repository }}
+      #     event-type: to-publish-npm
