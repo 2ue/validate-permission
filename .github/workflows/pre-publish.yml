@@ -28,11 +28,6 @@ jobs:
         with:
           node-version: 20.11.1
 
-      - name: Set Git user and email
-        run: |
-          git config --local user.name ${{vars.NAME}}
-          git config --local user.email ${{vars.EMAIL}}
-
       - name: Install pnpm
         run: |
           npm install -g pnpm

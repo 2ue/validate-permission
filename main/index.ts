@@ -16,7 +16,7 @@ import { Permissions, AtLeastFunc, IsFunc, AllFunc } from '../types';
 
 let permissionList: Permissions = [];
 // 要来标记是否已经调用setPermissions方法设置权限合集，permissionList不能作为判断标准，因为permissionList可能为空（用户无任何权限）
-let hasSeted = false;
+let hasSet = false;
 
 /**
  * 权限合集
@@ -26,14 +26,14 @@ let hasSeted = false;
  * */
 function setPermissions (list: Permissions) {
   permissionList = [...(list || [])];
-  hasSeted = true;
+  hasSet = true;
 }
 function getPermissions () {
   return [...permissionList];
 }
 
 function validatePermissionList() {
-  if (!hasSeted) {
+  if (!hasSet) {
     console.warn('请先调用<setPermissions>方法设置用户权限集');
     return false;
   }
