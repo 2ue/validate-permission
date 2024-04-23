@@ -47,12 +47,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      - name: Package specific files
-        run: |
-          # 指定打包的文件和文件夹
-          # 假设我们想要打包 package.json, dist 文件夹以及 LICENSE 文件
-          zip -r my-archive.zip ./package.json ./dist ./LICENSE
-          ls -al
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -66,6 +60,7 @@ jobs:
               - rollup.config.js
               - tsconfig.json
               - .babelrc
+              - .github/workflow/publish.yml
 
       - name: Repository Dispatch
         if: steps.changes.outputs.update == 'true'
