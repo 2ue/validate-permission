@@ -2,7 +2,7 @@ name: Pre Publish
 on:
   push:
     branches:
-      - main # master 分支有 push 行为时就触发这个 action
+      - main
 
 jobs:
   pre-publish:
@@ -18,7 +18,6 @@ jobs:
       - name: Set timezone to Asia/Shanghai
         uses: szenius/set-timezone@v2.0
         with:
-          # 设置执行环境的时区为 Linux 上海时区
           timezoneLinux: "Asia/Shanghai"
 
       - name: Echo current time
@@ -65,9 +64,9 @@ jobs:
           pnpm run build
 
       - name: Pre publish
-        run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
+        run: npm publish --dry-run
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       
       - uses: dorny/paths-filter@v3
         id: changes
@@ -112,11 +111,11 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ./.npmrc
           ls -al
           cat ./.npmrc
-          
+
       - name: Publish
-        run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         
       # - name: Repository Dispatch
       #   uses: peter-evans/repository-dispatch@v3
