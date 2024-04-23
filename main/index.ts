@@ -74,6 +74,8 @@ const atLeast: AtLeastFunc = (
   { value, n },
   userPermissions = permissionList
 ) => {
+  const valid = validateParam(validate, userPermissions);
+  if (!valid) return false;
   let checkNum = n;
   for (let i = 0; i <= value.length; i++) {
     if (is(value[i], userPermissions)) {
@@ -105,6 +107,8 @@ const oneOf: AllFunc = (values, userPermissions = permissionList): boolean => {
  * all(['USER', 'ADMIN', 'SETTING']) permissionList.includes('USER')
  */
 const all: AllFunc = (value, userPermissions = permissionList) => {
+  const valid = validateParam(validate, userPermissions);
+  if (!valid) return false;
   return atLeast({ value, n: value.length }, userPermissions);
 };
 
