@@ -81,8 +81,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           token: ${{ secrets.TOKEN }}
-          name: "${{ env.TAG_NAME }}"
-          tag_name: "Release ${{ env.NEW_VERSION }}"
+          name: "Release ${{ env.NEW_VERSION }}"
+          tag_name: "${{ env.TAG_NAME }}"
           body: "Check the changelog for details."
           draft: false
           prerelease: false
