@@ -60,7 +60,9 @@ jobs:
         run: pnpm i
 
       - name: Build dist
-        run: pnpm run build
+        run: |
+          git pull -p
+          pnpm run build
 
       - name: Pre publish
         run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
