@@ -33,22 +33,6 @@ jobs:
           git config --local user.name ${{vars.NAME}}
           git config --local user.email ${{vars.EMAIL}}
 
-      - name: Update Version
-        run: |
-          # 更新版本号并获取新版本号
-          VERSION=$(npm version patch --no-git-tag-version --silent)
-          echo "VERSION=$VERSION"
-          # 将新版本号输出到环境变量
-          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
-          SHORT_GITHUB_SHA=$(echo ${GITHUB_SHA:0:8})
-          echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA"
-          # 将八位hash输出到环境变量
-          echo "SHORT_GITHUB_SHA=$SHORT_GITHUB_SHA" >> $GITHUB_ENV
-          TAG_NAME="${VERSION}-${SHORT_GITHUB_SHA}"
-          echo "TAG_NAME=$TAG_NAME"
-          # 将组合的TAG_NAME输出到环境变量
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-      
       - name: Install pnpm
         run: |
           npm install -g pnpm
@@ -81,47 +65,13 @@ jobs:
               - rollup.config.js
               - tsconfig.json
               - .babelrc
-      
-      - name: Create GitHub Release
-        if: steps.changes.outputs.update == 'true'
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        with:
-          token: ${{ secrets.TOKEN }}
-          name: "Release ${{ env.NEW_VERSION }}"
-          tag_name: "${{ env.TAG_NAME }}"
-          body: "Check the changelog for details."
-          draft: false
-          prerelease: false
-          files: |
-            - package.json
-            - dist
-            - LICENSE
-
-      - name: Commit and push Version
-        run: |
-          git add package.json
-          git commit -m "Bump version to ${{ env.TAG_NAME }}"
-          git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
-          git push origin main
-      
-      - name: Add Npm Token
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ./.npmrc
-          ls -al
-          cat ./.npmrc
-
-      - name: Publish
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         
-      # - name: Repository Dispatch
-      #   uses: peter-evans/repository-dispatch@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     # 也可以直接写成R： GITHUB_REPOSITORY
-      #     # https://docs.github.com/zh/actions/learn-github-actions/variables
-      #     repository: ${{ github.repository }}
-      #     event-type: to-publish-npm
+      - name: Repository Dispatch
+        if: steps.changes.outputs.update == 'true'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 也可以直接写成R： GITHUB_REPOSITORY
+          # https://docs.github.com/zh/actions/learn-github-actions/variables
+          repository: ${{ github.repository }}
+          event-type: to-publish-npm
