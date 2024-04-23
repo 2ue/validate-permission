@@ -109,9 +109,11 @@ Vue.directive('permission', directive);
 <template>
     <!-- 使用自定义指令进行权限校验 -->
     <button v-permission:is="'USER.PAGE'">用户列表权限</button>
+    <button v-permission:all="['USER.PAGE', 'USER.EDIT']">用户页面和编辑权限</button>
     <!-- 更多权限校验方式 -->
 </template>
 ```
+ps: `v-permission`和`v-permission:is`是等价的
 
 #### 内置方法直接注册
 
@@ -119,13 +121,13 @@ Vue.directive('permission', directive);
 
 ``` javascript
 import Vue from 'vue';
-import validatePermission from 'validate-permission';
+import { install } from 'validate-permission';
 
 // 使用内置方法
-Vue.use(validatePermission);
+Vue.use(install);
 ```
 
-在Vue组件中，您可以直接通过`this.$permission`访问权限校验功能：
+在Vue组件中，您可以直接通过`this.$permission`访问权限校验功能，同样你也可以使用`v-permission`：
 
 ``` vue
 <template>

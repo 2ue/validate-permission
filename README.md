@@ -111,9 +111,12 @@ Then, in Vue components, you can use it like this:
 <template>
     <!-- Use custom directive for permission validation -->
     <button v-permission:is="'USER.PAGE'">User List Permission</button>
+    <button v-permission:all="['USER.PAGE', 'USER.EDIT']">User List Permission</button>
     <!-- More permission validation methods -->
 </template>
 ```
+
+notice: `v-permission` and `v-permission:is` are equivalent
 
 #### Direct Registration of Built-in Methods
 
@@ -121,13 +124,13 @@ Alternatively, you can directly use the built-in methods provided by `validatePe
 
 ``` javascript
 import Vue from 'vue';
-import validatePermission from 'validate-permission';
+import { install } from 'validate-permission';
 
 // Use built-in methods
-Vue.use(validatePermission);
+Vue.use(install);
 ```
 
-In Vue components, you can directly access the permission validation functionality through `this.$permission`:
+In Vue components, you can directly access the permission validation functionality through `this.$permission`, also you can use `v-permission`:
 
 ``` vue
 <template>
