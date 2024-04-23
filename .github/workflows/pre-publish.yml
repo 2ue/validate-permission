@@ -107,6 +107,12 @@ jobs:
           git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
           git push origin main
       
+      - name: Add Npm Token
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ./.npmrc
+          ls -al
+          cat ./.npmrc
+          
       - name: Publish
         run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
