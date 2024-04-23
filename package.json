@@ -5,6 +5,7 @@
   "main": "dist/cjs/validate-permission.cjs.js",
   "module": "dist/es/validate-permission.es.js",
   "amdName": "validatePermission",
+  "types": "dist/types",
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rimraf -rf ./dist && rollup --config"

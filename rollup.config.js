@@ -27,19 +27,19 @@ module.exports = defineConfig({
     input: 'main/index.ts',
     output: [
         {
-            file: `dist/cjs/${libName}.cjs.js`,
+            file: `dist/${libName}.cjs.js`,
             format: 'cjs',
             banner,
             sourcemap: true,
         },
         {
-            file: `dist/es/${libName}.es.js`,
+            file: `dist/${libName}.es.js`,
             format: 'es',
             banner,
             sourcemap: true,
         },
         {
-            file: `dist/umd/${libName}.umd.js`,
+            file: `dist/${libName}.umd.js`,
             // UMD 格式，可以用于 Node 和浏览器等多个场景
             format: 'umd',
             name: libName,
@@ -52,6 +52,8 @@ module.exports = defineConfig({
         babel(),
         typescript({
             sourceMap: true,
+            tsconfig: "./tsconfig.json", // 指定 tsconfig.json 文件的位置
+            outDir: "./dist/types", // 声明文件将输出到这个目录，与 declarationDir 
         }),
         resolve(),
         commonjs(),

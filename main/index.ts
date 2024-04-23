@@ -24,11 +24,11 @@ let hasSet = false;
  * @param list<Array>: 要校验的权限合集，如果没有任何权限支持传入空数组或者null
  *
  * */
-function setPermissions(list: Permissions) {
+export function setPermissions(list: Permissions) {
   permissionList = [...(list || [])];
   hasSet = true;
 }
-function getPermissions() {
+export function getPermissions() {
   return [...permissionList];
 }
 
@@ -112,14 +112,14 @@ const all: AllFunc = (value, userPermissions = permissionList) => {
   return atLeast({ value, n: value.length }, userPermissions);
 };
 
-const validate = {
+export const validate = {
   is,
   atLeast,
   oneOf,
   all,
 };
 
-const directive = {
+export const directive = {
   inserted(el: any, binding: any) {
     const { arg = "is", value } = binding;
     // @ts-ignore
@@ -137,7 +137,7 @@ const directive = {
   },
 };
 
-function install(Vue: any) {
+export function install(Vue: any) {
   Vue.directive("permission", directive);
   if (Vue.prototype.$permission) {
     console.warn("权限指令注册失败：已存在$permission");
@@ -147,11 +147,11 @@ function install(Vue: any) {
   }
 }
 
-export default {
-  directive,
-  install,
-  setPermissions,
-  getPermissions,
-  // 暴露此方法，以便在非vue实例的js代码中使用
-  validate,
-};
+// export default {
+//   directive,
+//   install,
+//   setPermissions,
+//   getPermissions,
+//   // 暴露此方法，以便在非vue实例的js代码中使用
+//   validate,
+// };
