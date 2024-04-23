@@ -68,8 +68,23 @@ jobs:
         run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
-
+      
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            update:
+              - 'main/**'
+              - 'types/**'
+              - 'utils/**'
+              - README.md
+              - package.json
+              - rollup.config.js
+              - tsconfig.json
+              - .babelrc
+      
       - name: Create GitHub Release
+        if: steps.changes.outputs.update == 'true'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
@@ -85,7 +100,7 @@ jobs:
             - dist
             - LICENSE
 
-      - name: Commit and push version bump
+      - name: Commit and push Version
         run: |
           git add package.json
           git commit -m "Bump version to ${{ env.TAG_NAME }}"
@@ -93,22 +108,7 @@ jobs:
           git push origin main
           git push origin ${{ env.TAG_NAME }}
       
-      - uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            update:
-              - 'main/**'
-              - 'types/**'
-              - 'utils/**'
-              - package.json
-              - README.md
-              - rollup.config.js
-              - tsconfig.json
-              - .babelrc
-      
       - name: Publish
-        if: steps.changes.outputs.update == 'true'
         run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
