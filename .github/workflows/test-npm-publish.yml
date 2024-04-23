@@ -76,21 +76,20 @@ jobs:
           git push origin ${{ env.TAG_NAME }}
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1.1.4
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: "${{ env.TAG_NAME }}"
-          release_name: "Release ${{ env.NEW_VERSION }}"
+          token: ${{ secrets.TOKEN }}
+          name: "${{ env.TAG_NAME }}"
+          tag_name: "Release ${{ env.NEW_VERSION }}"
           body: "Check the changelog for details."
           draft: false
           prerelease: false
-      # Triggering Workflow 2
-      # - name: Trigger Publish to npm
-      #   uses: benc-uk/workflow-dispatch@v1.2.3
-      #   with:
-      #     workflow: Npm publish
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            - package.json
+            - dist
+            - LICENSE
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:

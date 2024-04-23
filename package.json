@@ -2,8 +2,8 @@
   "name": "validate-permission",
   "version": "0.0.1",
   "description": "用户权限校验，支持react（函数式）调用，vue组件，vue指令等方式调用",
-  "main": "dist/validate-permission.cjs.js",
-  "module": "dist/validate-permission.esm.js",
+  "main": "dist/cjs/validate-permission.cjs.js",
+  "module": "dist/es/validate-permission.es.js",
   "amdName": "validatePermission",
   "scripts": {
     "dev": "rollup -c -w",
@@ -48,5 +48,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@babel/core": "^7.24.4"
   }
 }
