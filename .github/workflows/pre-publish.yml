@@ -60,7 +60,7 @@ jobs:
               - rollup.config.js
               - tsconfig.json
               - .babelrc
-              - .github/workflow/publish.yml
+              - .github/workflows/publish.yml
 
       - name: Repository Dispatch
         if: steps.changes.outputs.update == 'true'
