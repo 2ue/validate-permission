@@ -106,7 +106,6 @@ jobs:
           git commit -m "Bump version to ${{ env.TAG_NAME }}"
           git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
           git push origin main
-          git push origin ${{ env.TAG_NAME }}
       
       - name: Publish
         run: npm publish # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
