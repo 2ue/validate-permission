@@ -1,4 +1,4 @@
-name: Test Npm publish
+name: Pre Deploy
 on:
   push:
     branches:
@@ -41,7 +41,7 @@ jobs:
       - name: Build dist
         run: pnpm run build
 
-      - name: Start publish
+      - name: Pre publish
         run: npm publish --dry-run # 如果发布之前需要构建，可添加prepublishOnly的生命周期脚本
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # 上面在Github Secrets中设置的密钥
@@ -67,14 +67,6 @@ jobs:
           # 将组合的TAG_NAME输出到环境变量
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
-      - name: Commit and push version bump
-        run: |
-          git add package.json
-          git commit -m "Bump version to ${{ env.TAG_NAME }}"
-          git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
-          git push origin main
-          git push origin ${{ env.TAG_NAME }}
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         env:
@@ -90,6 +82,15 @@ jobs:
             - package.json
             - dist
             - LICENSE
+
+      - name: Commit and push version bump
+        run: |
+          git add package.json
+          git commit -m "Bump version to ${{ env.TAG_NAME }}"
+          git tag -a "${{ env.TAG_NAME }}" -m "Release ${{ env.TAG_NAME }}"
+          git push origin main
+          git push origin ${{ env.TAG_NAME }}
+
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
