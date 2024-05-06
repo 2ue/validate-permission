@@ -17,18 +17,50 @@ npm install --save validate-permission
 `validate-permission` offers a concise API interface, making permission management straightforward and intuitive. The following are its main exported methods:
 
 ``` javascript
-export default {
-    setPermissions,
-    getPermissions,
-    install,
-    directive,
-    validate
-};
+import { setPermissions, getPermissions, validate, install, directive } from 'validate-permission';
 ```
 
 ### setPermissions
 
 This method is used to set the user's permission set and is a prerequisite step for all permission checking methods. You need to ensure that you have set the correct permission set for the user through this method before calling any validation methods.
+Of course, you can also leave this method uncalled, but you will need to pass in additional permission set parameters each time you call the permission check method
+
+#### use setPermissions
+
+```javascript
+import { setPermissions, validate } from 'validate-permission';
+const permissions = ['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELET"];
+setPermissions(permissions);
+// Whether have permissions of user list
+validate.is('USER.LIST');
+// Whether have all permissions of user
+validate.all(['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELET"]);
+// Whether have add or edit permissions of user
+validate.oneOf(['USER.ADD', 'USER.EDIT']);
+// Whether have two permissions of add or edit or delete user
+validate.atLeast({
+    value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'],
+    n: 2
+});
+```
+
+#### not use setPermissions
+
+```javascript
+import { setPermissions, validate } from 'validate-permission';
+const permissions = ['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELET"];
+// Whether have permissions of user list
+validate.is('USER.LIST', permissions);
+// Whether have all permissions of user
+validate.all(['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELET"], permissions);
+// Whether have add or edit permissions of user
+validate.oneOf(['USER.ADD', 'USER.EDIT'], permissions);
+// Whether have two permissions of add or edit or delete user
+validate.atLeast({
+    value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'],
+    n: 2
+}, permissions);
+```
 
 ### getPermissions
 
@@ -51,7 +83,7 @@ This is a set of functional call methods suitable for React or other functional 
 - `validate.atLeast(options)`: Checks if the user has at least `n` permissions from a set.
 - `validate.oneOf(permissionsArray)`: Checks if the user has at least one permission from a set.
 
-``` shell
+``` javascript
 import { validate } from 'validate-permission';
 
 // Check user permissions
@@ -71,6 +103,7 @@ console.log('Has user add or edit permission:', validate.oneOf(['USER.ADD', 'USE
 ## Usage Examples
 
 ### Setting User Permission Set
+
 Before using the `validate` method, you need to set the user's permission set. This is usually done after a user logs in and permission data is obtained from the server:
 
 ``` javascript
@@ -84,6 +117,7 @@ setPermissions(permissions);
 ```
 
 ### Retrieving User Permission Set
+
 When custom permission validation logic is needed, you may need to retrieve the user's permission set:
 
 ``` javascript
@@ -94,7 +128,9 @@ console.log('Current user permission set:', getPermissions());
 ```
 
 ### Vue Integration
+
 #### Custom Directive Registration
+
 In a Vue project, you can register the `validate-permission` directive as a global directive to use in templates:
 
 ``` javascript
@@ -128,6 +164,14 @@ import { install } from 'validate-permission';
 
 // Use built-in methods
 Vue.use(install);
+// By default, permission is used as the command name, and v-permission is used directly
+// By default, $permission is used as the instance method name, and this is $permission directly when used
+
+// Alternatively, you can manually specify the directiveKey and instanceKey
+Vue.use(install, {
+    directiveKey: 'validate-permission',
+    instanceKey: '$validatePermission',
+});
 ```
 
 In Vue components, you can directly access the permission validation functionality through `this.$permission`, also you can use `v-permission`:

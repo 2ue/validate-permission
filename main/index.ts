@@ -12,7 +12,7 @@
  */
 
 import { isBlankValue, isType } from "../utils";
-import { Permissions, AtLeastFunc, IsFunc, AllFunc } from "../types";
+import { Permissions, AtLeastFunc, IsFunc, AllFunc, InstallOptions } from "../types";
 
 let permissionList: Permissions = [];
 // 要来标记是否已经调用setPermissions方法设置权限合集，permissionList不能作为判断标准，因为permissionList可能为空（用户无任何权限）
@@ -40,7 +40,7 @@ function validatePermissionList() {
   return true;
 }
 
-function validateParam(value: any, permissions: Permissions) {
+function validateParam(value: any, permissions?: Permissions) {
   if (isBlankValue(permissions) || !validatePermissionList()) return;
   if (isBlankValue(value)) {
     console.warn("传入的权限参数不能为空");
@@ -55,30 +55,32 @@ function validateParam(value: any, permissions: Permissions) {
 
 /**
  * 单个权限校验
- * is('USER') => permissionList.includes('USER')
+ * is(['SETTING'], userPermissions);
  */
 const is: IsFunc = (
   value: string,
-  userPermissions = permissionList
+  userPermissions?
 ): boolean => {
-  const valid = validateParam(validate, userPermissions);
+  const _permissions = userPermissions || permissionList;
+  const valid = validateParam(validate, _permissions);
   if (!valid) return false;
-  return userPermissions.includes(value);
+  return _permissions.includes(value);
 };
 
 /**
  * 至少满足多少个权限
- * atLeast(['USER', 'ADMIN', 'SETTING'], 2)
+ * atLeast({ value: ['USER', 'ADMIN', 'SETTING'], n: 2 }, userPermissions)
  */
 const atLeast: AtLeastFunc = (
   { value, n },
-  userPermissions = permissionList
+  userPermissions?
 ) => {
-  const valid = validateParam(validate, userPermissions);
+  const _permissions = userPermissions || permissionList;
+  const valid = validateParam(validate, _permissions);
   if (!valid) return false;
   let checkNum = n;
   for (let i = 0; i <= value.length; i++) {
-    if (is(value[i], userPermissions)) {
+    if (is(value[i], _permissions)) {
       checkNum -= 1;
     }
     if (checkNum === 0) break;
@@ -88,28 +90,30 @@ const atLeast: AtLeastFunc = (
 
 /**
  * 满足其中一个
- * is('USER') => permissionList.includes('USER')
+ * oneOf(['USER', 'ADMIN', 'SETTING'], userPermissions)
  */
-const oneOf: AllFunc = (values, userPermissions = permissionList): boolean => {
-  const valid = validateParam(validate, userPermissions);
+const oneOf: AllFunc = (values, userPermissions?): boolean => {
+  const _permissions = userPermissions || permissionList;
+  const valid = validateParam(validate, _permissions);
   if (!valid) return false;
   return atLeast(
     {
       value: values,
       n: 1,
     },
-    permissionList
+    _permissions
   );
 };
 
 /**
  * 满足所有权限
- * all(['USER', 'ADMIN', 'SETTING']) permissionList.includes('USER')
+ * all(['USER', 'ADMIN', 'SETTING'], userPermissions)
  */
-const all: AllFunc = (value, userPermissions = permissionList) => {
-  const valid = validateParam(validate, userPermissions);
+const all: AllFunc = (value, userPermissions?): boolean => {
+  const _permissions = userPermissions || permissionList;
+  const valid = validateParam(validate, _permissions);
   if (!valid) return false;
-  return atLeast({ value, n: value.length }, userPermissions);
+  return atLeast({ value, n: value.length }, _permissions);
 };
 
 export const validate = {
@@ -137,21 +141,21 @@ export const directive = {
   },
 };
 
-export function install(Vue: any) {
-  Vue.directive("permission", directive);
-  if (Vue.prototype.$permission) {
+const installOptions = {
+  directiveKey: 'permission',
+  instanceKey: '$permission',
+}
+
+export function install(Vue: any, options?: InstallOptions) {
+  const _options = {
+    ...installOptions,
+    ...(options || {}),
+  }
+  Vue.directive(_options.directiveKey, directive);
+  if (Vue.prototype[_options.instanceKey]) {
     console.warn("权限指令注册失败：已存在$permission");
   } else {
     // eslint-disable-next-line no-param-reassign
-    Vue.prototype.$permission = validate;
+    Vue.prototype[_options.instanceKey] = validate;
   }
 }
-
-// export default {
-//   directive,
-//   install,
-//   setPermissions,
-//   getPermissions,
-//   // 暴露此方法，以便在非vue实例的js代码中使用
-//   validate,
-// };

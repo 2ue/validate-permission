@@ -15,18 +15,50 @@ npm install --save validate-permission
 `validate-permission`提供了一个简洁的API接口，使得权限管理变得简单直观。以下是其主要的导出方法：
 
 ``` javascript
-export default {
-    setPermissions,
-    getPermissions,
-    install,
-    directive,
-    validate
-};
+import { setPermissions, getPermissions, validate, install, directive } from 'validate-permission';
 ```
 
 ### setPermissions
 
 此方法用于设置用户的权限集，是所有权限检测方法的前置步骤。您需要在调用任何校验方法之前，确保已经通过此方法为用户设置了正确的权限集。
+当然你也可以不调用此方法，但是你需要在每次调用权限校验方法时额外传入权限集参数
+
+#### 使用setPermissions
+
+```javascript
+import { setPermissions, validate } from 'validate-permission';
+const permissions = ['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELETE"];
+setPermissions(permissions);
+// 是否具有用户列表权限
+validate.is('USER.LIST');
+// 是否具有用户列表，新增用户，编辑用户，删除用户所有权限
+validate.all(['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELETE"]);
+// 是否具有用户新增和用户编辑其中一个权限
+validate.oneOf(['USER.ADD', 'USER.EDIT']);
+// 是否具有用户新增，编辑，删除其中两个权限
+validate.atLeast({
+    value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'],
+    n: 2
+});
+```
+
+#### 不使用setPermissions
+
+```javascript
+import { setPermissions, validate } from 'validate-permission';
+const permissions = ['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELETE"];
+// 是否具有用户列表权限
+validate.is('USER.LIST', permissions);
+// 是否具有用户列表，新增用户，编辑用户，删除用户所有权限
+validate.all(['USER.LIST', 'USER.ADD', 'USER.EDIT', "USER.DELETE"], permissions);
+// 是否具有用户新增和用户编辑其中一个权限
+validate.oneOf(['USER.ADD', 'USER.EDIT'], permissions);
+// 是否具有用户新增，编辑，删除其中两个权限
+validate.atLeast({
+    value: ['USER.ADD', 'USER.EDIT', 'USER.DELETE'],
+    n: 2
+}, permissions);
+```
 
 ### getPermissions
 
@@ -69,6 +101,7 @@ console.log('是否拥有用户新增或编辑权限：', validate.oneOf(['USER.
 ## 使用示例
 
 ### 设置用户权限集
+
 在使用`validate`方法之前，您需要先设置用户的权限集。这通常在用户登录成功后，从服务器获取权限数据时进行：
 
 ``` javascript
@@ -82,6 +115,7 @@ setPermissions(permissions);
 ```
 
 ### 获取用户权限集
+
 在自定义权限校验逻辑时，您可能需要获取用户的权限集：
 
 ``` javascript
@@ -91,8 +125,10 @@ import { getPermissions } from 'validate-permission';
 console.log('当前用户权限集：', getPermissions());
 ```
 
-### Vue集成
+### Vue2集成
+
 #### 自定义注册指令
+
 在Vue项目中，您可以将`validate-permission`的指令注册为全局指令，以便在模板中使用：
 
 ``` javascript
@@ -125,6 +161,14 @@ import { install } from 'validate-permission';
 
 // 使用内置方法
 Vue.use(install);
+// 默认是使用permission作为指令名，使用时直接v-permission
+// 默认是使用$permission作为实例方法名，使用时直接this.$permission
+
+// 或者手动指定directiveKey和instanceKey
+Vue.use(install, {
+    directiveKey: 'validate-permission',
+    instanceKey: '$validatePermission',
+});
 ```
 
 在Vue组件中，您可以直接通过`this.$permission`访问权限校验功能，同样你也可以使用`v-permission`：
@@ -148,7 +192,7 @@ export default {
 </script>
 ```
 
-### React或函数式调用
+### React/Vue3或函数式调用
 
 在React或其他支持函数式编程的框架中，您可以这样使用`validate-permission`：
 
