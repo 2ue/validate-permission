@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+dependencies:
+  jia-tools:
+    specifier: ^0.0.3
+    version: 0.0.3
+
 devDependencies:
   '@babel/core':
     specifier: ^7.24.4
@@ -1897,6 +1902,10 @@ packages:
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
+
+  /jia-tools@0.0.3:
+    resolution: {integrity: sha512-6FvJAklIWCeubVIbDswKPW02Tm5x6FZzbB6g2ZUjWynnVM9JD3XQX04TpBO+L3liuM4Wac9sh4uhGnO7bevfQQ==}
+    dev: false
 
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
