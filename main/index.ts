@@ -24,8 +24,8 @@ let hasSet = false;
  * @param list<Array>: 要校验的权限合集，如果没有任何权限支持传入空数组或者null
  *
  * */
-export function setPermissions(list: Permissions) {
-  permissionList = [...(list || [])];
+export function setPermissions(permissions: Permissions) {
+  permissionList = [...(permissions || [])];
   hasSet = true;
 }
 export function getPermissions() {
@@ -48,14 +48,9 @@ function validateParam(value: any, permissions?: Permissions) {
   }
   return true;
 }
-
-// is('USER') => permissionList.includes('USER')
-// all(['USER', 'ADMIN', 'SETTING']) permissionList.includes('USER')
-// atLeast(['USER', 'ADMIN', 'SETTING'], 2)
-
 /**
  * 单个权限校验
- * is(['SETTING'], userPermissions);
+ * is('SETTING', userPermissions);
  */
 const is: IsFunc = (
   value: string,

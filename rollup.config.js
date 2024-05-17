@@ -50,11 +50,7 @@ module.exports = defineConfig({
     ],
     plugins: [
         babel(),
-        typescript({
-            sourceMap: true,
-            tsconfig: "./tsconfig.json", // 指定 tsconfig.json 文件的位置
-            outDir: "./dist/types", // 声明文件将输出到这个目录，与 declarationDir 
-        }),
+        typescript(),
         resolve(),
         commonjs(),
         terser()
