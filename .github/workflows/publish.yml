@@ -31,6 +31,7 @@ jobs:
         run: |
           git config --local user.name ${{vars.NAME}}
           git config --local user.email ${{vars.EMAIL}}
+          git config --local --list
 
       - name: Update Version
         run: |
