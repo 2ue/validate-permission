@@ -97,7 +97,7 @@ export const directive = {
   inserted(el: any, binding: any) {
     const { arg = "is", value } = binding;
     const validateFunc = validateFunMaps?.[arg];
-    if (!validateFunc && !isType(validateFunc, "Function")) {
+    if (!validateFunc && !isType<Function>(validateFunc, "Function")) {
       return;
     }
     const hasPermission = validateFunc(value);
