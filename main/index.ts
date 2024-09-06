@@ -11,54 +11,35 @@
  * 4.自定义校验
  */
 
-import { isBlankValue, isType } from "../utils";
+import { isType } from "../utils";
 import { Permissions, AtLeastFunc, IsFunc, AllFunc, InstallOptions } from "../types";
 
 let permissionList: Permissions = [];
-// 要来标记是否已经调用setPermissions方法设置权限合集，permissionList不能作为判断标准，因为permissionList可能为空（用户无任何权限）
-let hasSet = false;
 
 /**
- * 权限合集
+ * 设置权限集合
  * 必须调用该方法
  * @param list<Array>: 要校验的权限合集，如果没有任何权限支持传入空数组或者null
  *
  * */
 export function setPermissions(permissions: Permissions) {
   permissionList = [...(permissions || [])];
-  hasSet = true;
 }
-export function getPermissions() {
+
+// 获取权限集合
+export function getPermissions(): Permissions {
   return [...permissionList];
 }
 
-function validatePermissionList() {
-  if (!hasSet) {
-    console.warn("请先调用<setPermissions>方法设置用户权限集");
-    return false;
-  }
-  return true;
-}
-
-function validateParam(value: any, permissions?: Permissions) {
-  if (isBlankValue(permissions) || !validatePermissionList()) return;
-  if (isBlankValue(value)) {
-    console.warn("传入的权限参数不能为空");
-    return false;
-  }
-  return true;
-}
 /**
  * 单个权限校验
  * is('SETTING', userPermissions);
  */
 const is: IsFunc = (
-  value: string,
+  value,
   userPermissions?
 ): boolean => {
-  const _permissions = userPermissions || permissionList;
-  const valid = validateParam(validate, _permissions);
-  if (!valid) return false;
+  const _permissions = userPermissions ?? permissionList;
   return _permissions.includes(value);
 };
 
@@ -71,8 +52,6 @@ const atLeast: AtLeastFunc = (
   userPermissions?
 ) => {
   const _permissions = userPermissions || permissionList;
-  const valid = validateParam(validate, _permissions);
-  if (!valid) return false;
   let checkNum = n;
   for (let i = 0; i <= value.length; i++) {
     if (is(value[i], _permissions)) {
@@ -87,13 +66,11 @@ const atLeast: AtLeastFunc = (
  * 满足其中一个
  * oneOf(['USER', 'ADMIN', 'SETTING'], userPermissions)
  */
-const oneOf: AllFunc = (values, userPermissions?): boolean => {
+const oneOf: AllFunc = (value, userPermissions?): boolean => {
   const _permissions = userPermissions || permissionList;
-  const valid = validateParam(validate, _permissions);
-  if (!valid) return false;
   return atLeast(
     {
-      value: values,
+      value,
       n: 1,
     },
     _permissions
@@ -106,12 +83,10 @@ const oneOf: AllFunc = (values, userPermissions?): boolean => {
  */
 const all: AllFunc = (value, userPermissions?): boolean => {
   const _permissions = userPermissions || permissionList;
-  const valid = validateParam(validate, _permissions);
-  if (!valid) return false;
   return atLeast({ value, n: value.length }, _permissions);
 };
 
-export const validate = {
+export const validateFunMaps: Record<string, Function> = {
   is,
   atLeast,
   oneOf,
@@ -121,17 +96,14 @@ export const validate = {
 export const directive = {
   inserted(el: any, binding: any) {
     const { arg = "is", value } = binding;
-    // @ts-ignore
-    const validateFunc = validate?.[arg] as Function;
-    if (!isType(validateFunc, "Function")) {
+    const validateFunc = validateFunMaps?.[arg];
+    if (!validateFunc && !isType(validateFunc, "Function")) {
       return;
     }
     const hasPermission = validateFunc(value);
-    // 主要考虑到数据变化后，页面未刷新能实时响应
     if (!hasPermission) {
       if (el.parentNode && el.parentNode.removeChild(el)) return;
     }
-    // eslint-disable-next-line no-param-reassign
     el.style.display = hasPermission ? "" : "none";
   },
 };
@@ -148,9 +120,8 @@ export function install(Vue: any, options?: InstallOptions) {
   }
   Vue.directive(_options.directiveKey, directive);
   if (Vue.prototype[_options.instanceKey]) {
-    console.warn("权限指令注册失败：已存在$permission");
+    console.warn(`实例方法[${_options.instanceKey}]注册失败：${_options.instanceKey}已存在`);
   } else {
-    // eslint-disable-next-line no-param-reassign
-    Vue.prototype[_options.instanceKey] = validate;
+    Vue.prototype[_options.instanceKey] = validateFunMaps;
   }
 }
